@@ -1,15 +1,74 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>파일업로드1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>파일업로드1</title>
 </head>
+<style type="text/css">
+#drop_zone {
+	border: 2px solid red;
+	width: 200px;
+	height: 100px;
+}
+</style>
 <body>
-	<input type="text" id="username" name="username" value="sangkook"/>
-	<input type="file" id="uploadfile" name="uploadfile"/>
+	<h4>파일 1개를 드래그 하면 바로 서버로 전송됨, fetch api 사용</h4>
+	<input type="text" id="message" />
+	<div id="drop_zone" ondrop="dropHandler(event);"
+		ondragover="dragOverHandler(event);">
+		<p>
+			Drag one or more files to this <i>drop zone</i>.
+		</p>
+	</div>
 </body>
 <script>
+
+function dropHandler(ev) {
+	console.log("File(s) dropped");
+	// Prevent default behavior (Prevent file from being opened)
+	ev.preventDefault();
+
+	if (ev.dataTransfer.items) {
+		[...ev.dataTransfer.items].forEach((item, i) => {
+			console.log(`item kind is ${item.kind}`);
+			if (item.kind === "file") {
+				const file = item.getAsFile();
+				submit(file);
+				console.log(`… file[${i}].name = ${file.name}`);
+			}
+		});
+	} else {
+		// Use DataTransfer interface to access the file(s)
+		[...ev.dataTransfer.files].forEach((file, i) => {
+			console.log('Use DataTransfer interface to access the file');
+			console.log(`… file[${i}].name = ${file.name}`);
+		});
+	}
+}
+
+const submit = (file) =>{
+	 
+	let data = new FormData();
+    data.append('file', file);
+    data.append('message', document.getElementById('message').value);
+
+    fetch("/file/upload1", {
+
+        method: 'POST',
+        body: data
+       
+    }).then(res => res.json())
+    .then(text => console.log(text))
+    .catch((err) => console.log("에러", err));
+};
+
+//파일이 drop zone 위에 over 되었을때
+function dragOverHandler(ev) {
+  console.log("File(s) in drop zone");
+  ev.preventDefault();
+}
+	
 </script>
 </html>
