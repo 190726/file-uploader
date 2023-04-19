@@ -14,7 +14,7 @@
 	}
 </style>
 <body>
-	<h4>파일 1개를 드래그 하면 바로 서버로 전송됨, fetch api 사용</h4>
+	<h4>파일 N개를 드래그 하면 바로 서버로 전송됨, fetch api 사용</h4>
 	<input type="text" id="message" />
 	<div id="drop_zone" ondrop="dropHandler(event);"
 		ondragover="dragOverHandler(event);">
@@ -29,9 +29,10 @@ function dropHandler(ev) {
 	console.log("File(s) dropped");
 	// Prevent default behavior (Prevent file from being opened)
 	ev.preventDefault();
+	
+	submit(ev.dataTransfer.files);
 
-	//dataTransfer 는 drag&drop된 대상 데이터를 담는 역할을 한다.
-	if (ev.dataTransfer.items) {
+	/* if (ev.dataTransfer.items) {
 		[...ev.dataTransfer.items].forEach((item, i) => {
 			if (item.kind === "file") {
 				const file = item.getAsFile();
@@ -40,21 +41,23 @@ function dropHandler(ev) {
 			}
 		});
 	} else {
-		// Use DataTransfer interface to access the file(s)
 		[...ev.dataTransfer.files].forEach((file, i) => {
 			console.log('Use DataTransfer interface to access the file');
 			console.log(`… file[${i}].name = ${file.name}`);
 		});
-	}
+	} */
 }
 
-const submit = (file) =>{
+const submit = (files) =>{
 	 
 	let data = new FormData();
-    data.append('file', file);
+    
+    for(const file of files){
+   	 data.append('file', file);//동일한 key 이름으로 여러번 반복
+    }
     data.append('message', document.getElementById('message').value);
 
-    fetch("/file/upload1", {
+    fetch("/file/upload2", {
 
         method: 'POST',
         body: data

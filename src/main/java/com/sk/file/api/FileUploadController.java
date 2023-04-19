@@ -1,5 +1,9 @@
 package com.sk.file.api;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,11 +18,26 @@ public class FileUploadController {
 	public Response upload1(
 			@RequestParam(value = "message") String message,
 			@RequestParam(value = "file", required = false) MultipartFile file) {
-		System.out.println(message);
-		System.out.println(file.getName());
-		System.out.println(file.getSize());
-		System.out.println(file.getResource());
+		log(message, Collections.singletonList(file));
 		return new Response("success");
+	}
+	
+	@PostMapping("/upload2")
+	public Response upload2(
+			@RequestParam(value = "message") String message,
+			@RequestParam(value = "file", required = false) MultipartFile[] file) {
+		log(message, Arrays.asList(file));
+		return new Response("success");
+	}
+	
+	private void log(String message, List<MultipartFile> file) {
+		System.out.println(message);
+		file.forEach(f ->{
+			System.out.println(f.getName());
+			System.out.println(f.getSize());
+			System.out.println(f.getOriginalFilename());
+		});
+		
 	}
 	
 	static class Response{
